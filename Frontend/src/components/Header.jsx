@@ -1,14 +1,60 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {jwtDecode} from 'jwt-decode';
+import axios from 'axios';
 
 
 
 const Header = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [userData , setUserData] = useState({});
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
+
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (token) {
+      getuserDetails(); 
+    }
+  }, [token]);
+
+  const getuserDetails = async () => {
+    // Retrieve JWT token from localStorage
+    const token = localStorage.getItem('token');
+    
+    // Decode the JWT token to extract email
+    const decoded = jwtDecode(token);
+    const email = decoded.email;
+
+    // Set the Authorization header with the JWT token
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
+    try {
+        // Make GET request to the server with the authorization header
+        const res = await axios.get(`http://localhost:5000/user/${email}`, config);
+
+        // Assuming setUserData is a function to update user data in your component state
+        setUserData(res.data);
+    } catch (error) {
+        // Handle errors
+        console.error('Error fetching user details:', error);
+    }
+};
+
+    console.log(userData);
+
+    const logout = () => {
+      localStorage.removeItem('token');
+      window.location.reload();
+    };
+
 
   return (
     <>
@@ -101,7 +147,7 @@ const Header = () => {
                 >
                   FAQ
                 </a>
-            
+            <button onClick={logout} className="mx-2 sm:mx-4 hover:scale-110 active">Logout</button>
               </div>
             </div>
           </nav>

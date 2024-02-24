@@ -33,5 +33,12 @@
     "age": 20,
     "email": "john@gmail.com",
     "password": "$2b$10$6Z0IL/zZzbFRvfELLbliKuRbPLD2TVmRZgVfdfsFrALz2Gboz8oRq"
+  },
+  {
+    "firstname": "POKE",
+    "lastname": "MON",
+    "age": 2,
+    "email": "Pokemonpikachu@email.com",
+    "password": "$2b$10$fQYOFT7Vv5c/hJq.1Yq3T.sXeBWB7Q5Yd4q1mZxZ1s0BF/ThY8Baa"
   }
 ]

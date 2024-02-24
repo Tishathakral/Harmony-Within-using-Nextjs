@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios'; // for making HTTP requests
 import { useRouter } from 'next/navigation';
 
@@ -13,6 +13,13 @@ const Login = () => {
 
     // Initialize router
     const router = useRouter();
+    const token = localStorage.getItem('token');
+
+    useEffect(() => {
+        if (token) {
+            router.push('/');
+        }
+    }, [token]);
 
     // Define handleChange function to update form data
     const handleChange = (e) => {
@@ -27,6 +34,9 @@ const Login = () => {
             const res = await axios.post('http://localhost:5000/login', formData);
             console.log(res);
             if (res.status === 200) {
+                const jwttoken = res.data.token;
+                localStorage.setItem('token', jwttoken);
+                
                 console.log('Login successful');
                 router.push('/');
             }

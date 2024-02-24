@@ -3,6 +3,7 @@ const app = express();
 const port = 5000;
 const fs = require('fs');
 const z = require('zod');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -23,6 +24,9 @@ const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
 };
+app.get('/', (req, res) => {
+    res.send('HOW TO USE: \n\n1. POST /signup with body {firstname, lastname, age, email, password} to signup \n2. POST /login with body {email, password} to login \n3. GET /users to get all users \n');
+});
 
 app.post('/signup', async (req, res) => {
     try {
@@ -48,6 +52,24 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+// Verify token middleware
+function verifyToken(req, res, next) {
+    const token = req.headers['authorization'];
+  
+    if (typeof token !== 'undefined') {
+      jwt.verify(token.split(' ')[1], 'secret', (err, decoded) => {
+        if (err) {
+          res.status(403).send('Invalid token');
+        } else {
+          req.user = decoded.user;
+          next();
+        }
+      });
+    } else {
+      res.status(401).send('Unauthorized');
+    }
+  }
+
 app.post('/login', (req, res) => {
     const data = req.body;
     fs.readFile('a.json', (err, data1) => {
@@ -55,7 +77,10 @@ app.post('/login', (req, res) => {
         const users = JSON.parse(data1);
         const user = users.find(u => u.email === data.email);
         if (user && bcrypt.compareSync(data.password, user.password)) {
-            res.send('Login Success');
+            const token = jwt.sign({ email: user.email },
+                'secret',
+                { expiresIn: '1h' });
+            res.status(200).send({ token });
         } else {
             res.status(400).send('Login Failed');
         }
@@ -70,6 +95,25 @@ app.get('/users', (req, res) => {
     );
 }
 );
+
+app.get('/user/:email', verifyToken , (req, res) => {
+    fs.readFile('a.json', (err, data) => {
+        if (err) throw err;
+        const users = JSON.parse(data);
+        const user = users.find(u => u.email === req.params.email);
+        if (user) {
+            const userdata = {
+                firstname: user.firstname,
+                lastname: user.lastname,
+                age: user.age,
+                email: user.email
+            };
+            res.send(userdata);
+        } else {
+            res.status(404).send('User not found');
+        }
+    });
+});
 
 
 app.listen(port, () => {
