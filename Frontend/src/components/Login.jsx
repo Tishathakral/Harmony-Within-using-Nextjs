@@ -31,11 +31,11 @@ const Login = () => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             // Send POST request to server with form data
-            const res = await axios.post('http://localhost:5000/login', formData);
+            const res = await axios.post('http://localhost:3000/user/login', formData);
             console.log(res);
             if (res.status === 200) {
-                const jwttoken = res.data.token;
-                localStorage.setItem('token', jwttoken);
+                const token = res.data.token;
+                localStorage.setItem('token', token);
                 
                 console.log('Login successful');
                 router.push('/');
@@ -43,7 +43,6 @@ const Login = () => {
             else {
                 console.log('Login failed');
             }
-            
         } catch (error) {
             console.error('Login failed:', error);
         }

@@ -1,10 +1,23 @@
 {
+  "name": "backendpractice",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "type": "module",
+  "description": "implementation of all the learning im going to learn from my course ",
+  "main": "index.js",
+  "author": "Tisha Thakral",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.2.0",
     "zod": "^3.22.4"
   }
 }

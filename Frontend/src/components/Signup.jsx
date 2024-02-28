@@ -10,7 +10,6 @@ const Signup = () => {
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
-        age: 0,
         email: '',
         password: ''
     });
@@ -34,16 +33,14 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = {
-            firstname: formData.firstname,
-            lastname: formData.lastname,
-            age: parseInt(formData.age),
+            name: formData.firstname + ' ' + formData.lastname,
             email: formData.email,
             password: formData.password
         };
 
         try {
             // Send POST request to server with form data
-            const res = await axios.post('http://localhost:5000/signup', data);
+            const res = await axios.post('http://localhost:3000/user/signup', data);
             console.log(res);
             if (res.status === 200) {
                 console.log('Signup successful');
@@ -92,21 +89,7 @@ const Signup = () => {
                         onChange={handleChange}
                     />
                 </div>
-                {/* Age field */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="age">
-                        Age
-                    </label>
-                    <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="age"
-                        type="number"
-                        placeholder="Age"
-                        name="age"
-                        value={formData.age}
-                        onChange={handleChange}
-                    />
-                </div>
+               
                 {/* Email field */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">

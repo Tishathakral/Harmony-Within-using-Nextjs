@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
+// import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 
 
@@ -15,38 +16,29 @@ const Header = () => {
 
   const token = localStorage.getItem('token');
 
+
   useEffect(() => {
     if (token) {
       getuserDetails(); 
-    }
+     }
   }, [token]);
 
-  const getuserDetails = async () => {
-    // Retrieve JWT token from localStorage
-    const token = localStorage.getItem('token');
-    
-    // Decode the JWT token to extract email
-    const decoded = jwtDecode(token);
-    const email = decoded.email;
-
-    // Set the Authorization header with the JWT token
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-
+    const getuserDetails = async () => {
     try {
-        // Make GET request to the server with the authorization header
-        const res = await axios.get(`http://localhost:5000/user/${email}`, config);
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken._id;
 
-        // Assuming setUserData is a function to update user data in your component state
-        setUserData(res.data);
+      // Make GET request to the server with credentials included
+      const res = await axios.get(`http://localhost:3000/user/${userId}`, { 
+        headers: { 'auth-token': token }
+      });
+      console.log(res);
+      setUserData(res.data);
     } catch (error) {
-        // Handle errors
-        console.error('Error fetching user details:', error);
+      console.error('Error fetching user details:', error);
     }
-};
+  };
+
 
     console.log(userData);
 
