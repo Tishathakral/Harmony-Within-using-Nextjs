@@ -1,145 +1,160 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-// import {jwtDecode} from 'jwt-decode';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-
-
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getuserDetails } from "@/handlers/homePageApis";
+import Link from "next/link";
+import { FiMenu, FiX } from 'react-icons/fi'; // Importing menu and close icons
+import { BsPersonFill } from 'react-icons/bs'; // Importing user icon
 
 const Header = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [userData , setUserData] = useState({});
+  const [login, setLogin] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isusermenuOpen, setuserMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
-
-  const token = localStorage.getItem('token');
-
-
-  useEffect(() => {
-    if (token) {
-      getuserDetails(); 
-     }
-  }, [token]);
-
-    const getuserDetails = async () => {
-    try {
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken._id;
-
-      // Make GET request to the server with credentials included
-      const res = await axios.get(`http://localhost:3000/user/${userId}`, { 
-        headers: { 'auth-token': token }
-      });
-      console.log(res);
-      setUserData(res.data);
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
+ const toggleUserMenu = () => {
+    setuserMenuOpen(!isusermenuOpen);
   };
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  useEffect(() => {
+    if (token) {
+      setLogin(true);
+    }
+  }, [token]);
 
-    console.log(userData);
+  const { data: userDetails, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getuserDetails(token),
+    enabled: login,
+  });
 
-    const logout = () => {
-      localStorage.removeItem('token');
-      window.location.reload();
-    };
+  useEffect(() => {
+    if (userDetails) {
+      setUserData(userDetails);
+    }
+  }, [userDetails]);
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <div className="drop-shadow-2xl border-gray-100 md:pb-5 pb-1 bg-yellow-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          {/* Logo Section */}
           <div className="flex flex-col-reverse md:flex-row min-w-full py-2 space-y-8 md:justify-between">
             <div className="flex-1 md:self-start md:flex md:items-center">
               <a href="#" className="flex items-center">
-                <img src="/logo2.png" className="h-16 w-16 sm:h-20 sm:w-20" alt="" />
+                <img
+                  src="/logo2.png"
+                  className="h-16 w-16 sm:h-20 sm:w-20"
+                  alt=""
+                />
                 <span className="pt-1 mx-1 text-2xl sm:text-4xl italic font-serif text-red-700 hover:text-gray-900">
                   Harmony <div className="text-lg sm:text-2xl">Within</div>
                 </span>
               </a>
             </div>
-            {/* Hamburger Menu Icon */}
-            <div className="md:hidden cursor-pointer absolute right-10 -top-1" onClick={toggleMenu}>
+            <div
+              className="md:hidden cursor-pointer absolute right-10 -top-1"
+              onClick={toggleMenu}
+            >
               {isMenuOpen ? (
-                // Cross Icon when the menu is open
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
+                <FiX className="w-6 h-6 text-black" />
               ) : (
-                // Hamburger Icon when the menu is closed
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  ></path>
-                </svg>
+                <FiMenu className="w-6 h-6 text-black" />
               )}
             </div>
           </div>
-          {/* Division Line */}
           <hr className="my-4 border-t border-black" />
-          {/* Navigation Section */}
           <nav
             id="bar"
             className={`${
-              isMenuOpen ? 'block' : 'hidden'
-            } md:flex flex-col sm:flex-row items-center border-spacing-8'`}
+              isMenuOpen ? "block" : "hidden"
+            } md:flex flex-col sm:flex-row items-center border-spacing-8`}
           >
-            <div className='backdrop-blur-sm w-full rounded md:flex justify-center'>
+            <div className="backdrop-blur-sm w-full rounded md:flex justify-center">
               <div className="flex flex-col sm:flex-row justify-center sm:space-y-0 space-y-2 text-center text-black text-lg font-gotham">
-                <a
+                <Link
                   href="#why"
                   className="mx-2 sm:mx-4 hover:scale-110 active"
                   aria-current="page"
                   onClick={toggleMenu}
                 >
                   Why
-                </a>
-                <a
+                </Link>
+                <Link
                   href="#sounds"
                   className="mx-2 sm:mx-4 hover:scale-110 active"
                   onClick={toggleMenu}
                 >
                   Explore
-                </a>
-                <a
+                </Link>
+                <Link
                   href="#discover"
                   className="mx-2 sm:mx-4 hover:scale-110 active"
                   onClick={toggleMenu}
                 >
                   Discover Music
-                </a>
-                <a
+                </Link>
+                <Link
                   href="#faq"
                   className="mx-2 sm:mx-4 hover:scale-110 active"
                   onClick={toggleMenu}
                 >
                   FAQ
-                </a>
-            <button onClick={logout} className="mx-2 sm:mx-4 hover:scale-110 active">Logout</button>
+                </Link>
+                {login && userData ? (
+                  <div className="relative mx-2 sm:mx-4 group">
+                    <button
+                      onClick={toggleUserMenu}
+                      className="hover:scale-110 active"
+                    >
+                      <BsPersonFill className="w-6 h-6" />
+                    </button>
+                    <ul
+                      className={`${
+                        isusermenuOpen ? "block" : "hidden"
+                      } absolute top-full left-0 w-36 bg-white border border-gray-200 py-2 rounded-md shadow-lg min-w-fit`}
+                    >
+                       <li className="px-4 py-2">
+                        <span className="block text-gray-800 font-semibold">
+                          {userData.name}
+                        </span>
+                      </li>
+                      <li className="px-4 py-2">
+                        <span className="block text-gray-800 font-semibold">
+                          {userData.email}
+                        </span>
+                      </li>
+                      <li className="px-4 py-2">
+                        <button
+                          onClick={logout}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="mx-2 sm:mx-4 hover:scale-110 active"
+                    onClick={toggleMenu}
+                  >
+                    Login
+                  </Link>
+                )}
               </div>
             </div>
           </nav>

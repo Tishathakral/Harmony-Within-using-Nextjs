@@ -1,6 +1,7 @@
 "use client";
+import { getGuidedLessons } from '@/handlers/homePageApis';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { useEffect, useState } from 'react';
 
 
 
@@ -19,21 +20,32 @@ const GuidedLessonCard = ({ title, description, imageURL }) => {
 
 const GuidedLessons = () => {
   // Example data for guided lessons
-  const [guidedLessonsData, setGuidedLessonsData] = useState([]);
-  const getguidedLessonsData= async () => {
-    try {
-      const res = await fetch('http://localhost:3000/guidedLessons');
-      const data = await res.json();
-      console.log(data);
-      setGuidedLessonsData(data);
-    } catch (error) {
-      console.error('Error fetching FAQ data:', error);
-    }
-  };
-  useEffect(() => {
-    getguidedLessonsData();
-  }, []);
+  // const [guidedLessonsData, setGuidedLessonsData] = useState([]);
+  // const getguidedLessonsData= async () => {
+  //   try {
+  //     const res = await fetch('http://localhost:3000/guidedLessons');
+  //     const data = await res.json();
+  //     console.log(data);
+  //     setGuidedLessonsData(data);
+  //   } catch (error) {
+  //     console.error('Error fetching FAQ data:', error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getguidedLessonsData();
+  // }, []);
   
+  const { data:guidedLessonsData, isLoading } = useQuery({
+    queryKey: ["guidedLessons"],
+    queryFn: getGuidedLessons,
+  });
+
+  console.log(guidedLessonsData);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+ 
 
   return (
     <div className="h-full bg-yellow-200 m-4 md:m-8 lg:m-16 rounded-lg" style={{ backgroundImage: 'url("https://cdn.pixabay.com/photo/2023/06/03/15/26/ginkgo-8037886_1280.jpg")' }}>

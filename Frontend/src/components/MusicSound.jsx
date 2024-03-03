@@ -1,12 +1,14 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import NatureInfo from './NatureInfo';
+import { useRouter } from 'next/navigation';
 
 const MeditationPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudio, setCurrentAudio] = useState(0);
   const [selectedAudioType, setSelectedAudioType] = useState('natureSounds');
   const audioRef = useRef(null);
+  const [login, setLogin] = useState(false);
 
   const audioList = {
     natureSounds: [
@@ -55,15 +57,30 @@ const MeditationPlayer = () => {
     ],
   };
 
+  const router = useRouter();
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  useEffect(() => {
+    if (token) {
+      setLogin(true);
+    }
+  }, [token]);
+
+
   const togglePlay = () => {
+    if(login){
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
     }
+  }else{
+    
+    router.push('/login');
+  }
     setIsPlaying((prevIsPlaying) => !prevIsPlaying);
   };
-
+                                                             
   const changeAudioType = (audioType) => {
     setSelectedAudioType(audioType);
     setCurrentAudio(0); // Reset current audio when changing the audio type
