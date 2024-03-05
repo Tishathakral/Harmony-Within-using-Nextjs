@@ -2,7 +2,7 @@
   "name": "backendpractice",
   "version": "1.0.0",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "node src/index.js"
   },
   "type": "module",
   "description": "implementation of all the learning im going to learn from my course ",
